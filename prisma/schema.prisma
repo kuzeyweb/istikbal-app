@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                    Int                     @id @default(autoincrement())
+  fullname              String
+  payrolls              payrolls[]
+  role_id               Int
+  role                  roles                   @relation(fields: [role_id], references: [id])
+  working_hours_records working_hours_records[]
+}
+
+model payrolls {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  user       users     @relation(fields: [user_id], references: [id])
+  url        String    @db.VarChar(500)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+}
+
+model roles {
+  id    Int     @id @default(autoincrement())
+  name  String
+  users users[]
+}
+
+model working_hours_records {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  user          users    @relation(fields: [user_id], references: [id])
+  start_time    DateTime @db.Time(3)
+  break_time    DateTime @db.Time(3)
+  end_time      DateTime @db.Time(3)
+  total_time    DateTime @db.Time(3)
+  worker_status String   @db.VarChar(1)
+  date_selected DateTime
+  note          String
+}
