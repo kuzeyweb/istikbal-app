@@ -1,20 +1,18 @@
-import { getSession } from 'next-auth/react'
-import { respondWithError } from '../helpers/apiResponse'
+import { useRouter } from 'next/router';
+import { useLayoutEffect } from 'react';
 
-const withProtect = (handler) => {
-    return async (req, res) => {
-        const session = await getSession({ req })
+const withAuth = (WrappedComponent) => {
+    const Wrapper = (props) => {
+        const router = useRouter();
 
-        if (!session) {
-            return respondWithError({
-                res: res,
-                message: "Unauthorized",
-                httpCode: 401
-            })
-        }
-
-        return handler({ req, res, session })
+        useLayoutEffect(() => {
+            const user = localStorage["user"];
+            if (!user)
+                router.replace("/auth-login");
+        })
     }
+
+    return Wrapper
 }
 
-export default withProtect;
+export default withAuth
