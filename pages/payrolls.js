@@ -22,7 +22,7 @@ const columns = [
     },
     {
         name: 'Bordro',
-        selector: row => <a target="_blank" href={row.payroll}>Bordroyu Görüntüle</a>,
+        selector: row => <a download target="_blank" href={`public/${row.payroll}`}>Bordroyu Görüntüle</a>,
         sortable: true
     },
 ];
@@ -53,7 +53,7 @@ const Payrolls = () => {
     const loadData = async () => {
         try {
             let res;
-            if (user.role_id === 1) {
+            if (user?.role_id === 1) {
                 res = await axios.get("/api/payrolls");
             } else {
                 res = await axios.get(`/api/payrolls?user_id=${user.id}`);

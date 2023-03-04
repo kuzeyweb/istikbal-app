@@ -69,10 +69,12 @@ async function handler(req, res) {
         }
     } else if (method === "GET") {
         const { user_id } = req.query;
+        let query = {};
+        if (user_id) query.user_id = Number(user_id);
         try {
             const hours = await prisma.working_hours_records.findMany({
                 where: {
-                    user_id
+                    ...query
                 },
                 include: {
                     user: true

@@ -69,10 +69,11 @@ const Tables = () => {
                 res = await axios.get(`/api/working-hours?user_id=${user.id}`);
             }
             const result = Object.values(res.data.payload.working_hours.reduce((acc, curr) => {
-                if (!acc[curr.date_range]) {
-                    acc[curr.date_range] = { date_range: curr.date_range, records: [curr], fullname: curr.user.fullname, note: curr.note, id: curr.id, pdf_url: curr.pdf_url };
+                const key = `${curr.date_range}-${curr.user.id}`; // include user_id in key
+                if (!acc[key]) {
+                    acc[key] = { date_range: curr.date_range, records: [curr], fullname: curr.user.fullname, note: curr.note, id: curr.id, pdf_url: curr.pdf_url };
                 } else {
-                    acc[curr.date_range].records.push(curr);
+                    acc[key].records.push(curr);
                 }
                 return acc;
             }, {}));
@@ -81,6 +82,12 @@ const Tables = () => {
         } catch (err) {
             console.error(err)
         }
+    };
+
+    function decimalHoursToTime(decimalHours) {
+        const wholeHours = Math.floor(decimalHours);
+        const minutes = Math.round((decimalHours - wholeHours) * 60);
+        return `${wholeHours}:${minutes.toString().padStart(2, '0')}`;
     }
 
     const handleSubmit = async () => {
@@ -120,17 +127,34 @@ const Tables = () => {
         setDateRange(moment.utc(days[0]).format("DD MMM, yyyy") + " - " + moment.utc(days[days.length - 1]).format("DD MMM, yyyy"))
     }, [startDate]);
 
+
+    function calculateWorkTime(start_time, end_time, break_time) {
+        const start = moment(start_time, 'HH:mm');
+        const end = moment(end_time, 'HH:mm');
+        let durationInMs;
+
+        if (moment.isDuration(break_time)) {
+            const pause = break_time;
+            durationInMs = end.diff(start) - pause.asMilliseconds();
+        } else {
+            const pauseStart = moment(break_time[0], 'HH:mm');
+            const pauseEnd = moment(break_time[1], 'HH:mm');
+            const pauseDurationInMs = pauseEnd.diff(pauseStart);
+            durationInMs = end.diff(start) - pauseDurationInMs;
+        }
+
+        const durationInHours = moment.duration(durationInMs).asHours();
+        return parseFloat(durationInHours.toFixed(2));
+    }
+
     // todo:hesaplama güncellenecek
     const calculateTimeDiff = (end_time, start_time, break_time, index) => {
         if (end_time && start_time && break_time) {
-            const start = moment(start_time, 'HH:mm').toDate();
-            const end = moment(end_time, 'HH:mm').toDate();
-            const pause = moment(break_time, 'HH:mm').toDate();
-            const durationInMs = end.getTime() - start.getTime() - pause.getTime();
+            const totalTime = calculateWorkTime(start_time, end_time, moment.duration(break_time.getHours() + ":" + break_time.getMinutes()));
 
             setFormData(current => {
                 const updatedCurrent = [...current];
-                updatedCurrent[index] = { ...updatedCurrent[index], total_time: new Date(durationInMs) };
+                updatedCurrent[index] = { ...updatedCurrent[index], total_time: decimalHoursToTime(totalTime) };
                 return updatedCurrent;
             });
         }
@@ -261,8 +285,7 @@ const Tables = () => {
                                                         />
                                                     </td>
                                                     <td key={formData?.[index]} className='h4'>{
-                                                        moment.utc(new Date(formData?.[index]?.total_time)).format("hh:mm") !== "Invalid date" ?
-                                                            moment.utc(new Date(formData?.[index]?.total_time)).format("hh:mm") : "-"}</td>
+                                                        formData?.[index]?.total_time ?? "-"}</td>
                                                     <td>
                                                         <input
                                                             onChange={(e) => setFormData(current => {
