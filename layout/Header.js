@@ -5,7 +5,8 @@ const Header = () => {
 
     const [user, setUser] = useState();
     useEffect(() => {
-        setUser(JSON.parse(localStorage["user"]));
+        if (localStorage.getItem("user"))
+            setUser(JSON.parse(localStorage["user"]));
     }, [])
 
     const logOut = () => {
@@ -23,7 +24,7 @@ const Header = () => {
                         </a>
                     </div>
                     <div className="right-side" style={{ display: 'flex', alignItems: 'center' }}>
-                        <span style={{ marginRight: '5px' }}>Welcome <b>  {user?.fullname}</b></span>
+                        <span style={{ marginRight: '5px' }}>Hoşgeldiniz <b>  {user?.fullname}</b></span>
                         <ExitToAppIcon onClick={() => logOut()} style={{ cursor: 'pointer' }} />
                     </div>
                 </div>

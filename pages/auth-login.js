@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 export default function AuthLogin() {
     const [formData, setFormData] = useState({
@@ -10,6 +10,12 @@ export default function AuthLogin() {
     const [errorMessage, setErrorMessage] = useState(false);
     const [successMessage, setSuccessMessage] = useState(false);
     const router = useRouter();
+
+    useLayoutEffect(() => {
+        let user = localStorage["user"];
+        if (user)
+            router.replace("/")
+    });
 
     const handleSubmit = async (event) => {
         event.preventDefault();

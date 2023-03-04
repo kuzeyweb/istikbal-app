@@ -2974,7 +2974,7 @@ input.sm-content {
   background-color: #0092FE;
 }
 
-li.active {
+li a.active {
   padding-left: 30px !important;
   background-color: #0092FE;
   color: #fff !important;

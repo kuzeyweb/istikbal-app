@@ -25,6 +25,7 @@ model payrolls {
   user_id    Int
   user       users     @relation(fields: [user_id], references: [id])
   url        String    @db.VarChar(500)
+  date       DateTime
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 }
@@ -36,14 +37,16 @@ model roles {
 }
 
 model working_hours_records {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   user_id       Int
-  user          users    @relation(fields: [user_id], references: [id])
-  start_time    DateTime @db.Time(3)
-  break_time    DateTime @db.Time(3)
-  end_time      DateTime @db.Time(3)
-  total_time    DateTime @db.Time(3)
-  worker_status String   @db.VarChar(1)
-  date_selected DateTime
-  note          String
+  user          users     @relation(fields: [user_id], references: [id])
+  start_time    DateTime  @db.Time(3)
+  break_time    DateTime  @db.Time(3)
+  end_time      DateTime  @db.Time(3)
+  total_time    DateTime  @db.Time(3)
+  worker_status String?   @db.VarChar(1)
+  date_selected DateTime?
+  note          String?
+  pdf_url       String?
+  date_range    String
 }

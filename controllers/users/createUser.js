@@ -1,19 +1,18 @@
 import { prisma } from "../../prisma/client";
 import { respondWithError, respondWithSuccess } from "../../helpers/apiResponse";
-import withAuth from "../../middlewares/withAuth";
 
 async function handler(req, res) {
     const { fullname, password, role_id } = req.body;
 
-    if (!fullname || !password || role_id)
-        return respondWithError({ res: res, message: "Username, password, role_id fields are required", httpCode: 400 });
+    if (!fullname || !password || !role_id)
+        return respondWithError({ res: res, message: "Fullname, password, role_id fields are required", httpCode: 400 });
 
     try {
         const user = await prisma.users.create({
             data: {
                 fullname: fullname,
                 password: password,
-                role_id: role_id
+                role_id: Number(role_id)
             }
         })
 
@@ -24,4 +23,4 @@ async function handler(req, res) {
     }
 };
 
-export default withAuth(handler);
+export default handler;

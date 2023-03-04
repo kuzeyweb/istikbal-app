@@ -11,6 +11,7 @@ export default function handler(req, res) {
             break;
         case "POST": ;
             createUser(req, res)
+            break;
         default:
             respondWithError({ res: res, message: "Method not allowed", httpCode: 405 })
     }

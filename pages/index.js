@@ -1,9 +1,18 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router';
+import { useLayoutEffect } from 'react';
 import Header from '../layout/Header'
 import Navigation from '../layout/Navigation'
-import withAuth from "../middlewares/withAuth"
 
 const Home = () => {
+
+  const router = useRouter();
+
+  useLayoutEffect(() => {
+    const user = localStorage["user"];
+    if (!user)
+      router.replace("/auth-login");
+  })
 
   return (
     <>
@@ -30,7 +39,7 @@ const Home = () => {
               </div>
             </div>
             <div className="sb2-2">
-              <h4>Sol menüden işlem seçiniz.</h4>
+              <h4>Menüden işlem seçiniz</h4>
             </div>
           </div>
         </div>
@@ -39,4 +48,4 @@ const Home = () => {
   )
 }
 
-export default withAuth(Home);
+export default Home;
