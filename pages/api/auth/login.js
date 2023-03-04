@@ -18,6 +18,9 @@ async function handler(req, res) {
             }
         });
 
+        if (!user)
+            return respondWithError({ res: res, message: "Could not log in with given credentials" })
+
         return respondWithSuccess({ res: res, message: "User successfully created", payload: { user: user } })
 
     } catch (err) {

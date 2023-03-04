@@ -34,7 +34,7 @@ const handler = async (req, res) => {
     await fs.mkdir(path.join(process.cwd() + "/public", "/uploads"))
   }
   const file = await readFile(req, true)
-  res.json({ filePath: `uploads/${file.files.payroll.newFilename}` })
+  res.json({ filePath: `public/uploads/${file.files.payroll.newFilename}` })
 }
 
 export default handler

@@ -46,7 +46,7 @@ const extractPdf = (data) => {
 
     const fileName = `public/uploads/${new Date().getTime() + "_" + data?.[0]?.user_name}.pdf`;
     doc.save(fileName);
-    return fileName.split("/")[1];
+    return fileName;
 }
 
 async function handler(req, res) {
